@@ -1,0 +1,5 @@
+account,domain,tier,current_vendor,why_now,signal_date,signal_source,personas,notes
+Northwind Example,northwind.example,1,Vendor A,"Posted two security engineer roles that mention replacing a scanner, and a VP spoke about tool sprawl",2026-11-10,job post + conference talk,A:VP Security;B:Director AppSec,"Open a conversation about ""consolidation"""
+Contoso Example,contoso.example,2,Vendor B,Renewal window mentioned in a public RFP,2026-09-01,public RFP,A:CISO,
+Fabrikam Example,fabrikam.example,2,,,2026-11-01,,B:Head of Platform,No timing signal yet
+Northwind Example,northwind.example,1,Vendor A,"A second signal: new CISO announced",2026-11-12,press,A:CISO,

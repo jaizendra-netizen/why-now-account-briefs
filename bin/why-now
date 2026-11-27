@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+require 'optparse'
+require 'why_now'
+
+opts = { out: 'briefs', require: %w[account why_now], template: nil, stale: nil, today: Date.today }
+OptionParser.new do |o|
+  o.banner = 'Usage: why-now ACCOUNTS.csv [options]'
+  o.on('-o', '--out DIR', 'output folder (default briefs)') { |v| opts[:out] = v }
+  o.on('-t', '--template FILE', 'Markdown template with {{field}} and {{field|default}}') { |v| opts[:template] = v }
+  o.on('--require A,B', Array, 'columns that must be filled (default account,why_now)') { |v| opts[:require] = v }
+  o.on('--stale-days N', Integer, 'skip accounts whose signal_date is older than N days') { |v| opts[:stale] = v }
+  o.on('--today DATE', 'reference date YYYY-MM-DD (default today)') { |v| opts[:today] = Date.iso8601(v) }
+  o.on('--print-template', 'print the built-in template and exit') { puts WhyNow::DEFAULT_TEMPLATE; exit }
+end.parse!
+
+file = ARGV.shift or abort('accounts CSV required (see --help)')
+begin
+  recs = WhyNow.parse_csv(File.read(file))
+  tpl = opts[:template] ? File.read(opts[:template]) : WhyNow::DEFAULT_TEMPLATE
+  res = WhyNow.build(recs, outdir: opts[:out], template: tpl, required: opts[:require], stale_days: opts[:stale], today: opts[:today])
+rescue WhyNow::Error, Errno::ENOENT => e
+  abort "error: #{e.message}"
+end
+puts "#{res[:written]} briefs written to #{opts[:out]}/, #{res[:skipped].size} skipped"
+res[:skipped].each { |a, p| puts "  skipped #{a}: #{p.join('; ')}" }
+exit(res[:skipped].empty? ? 0 : 1)
