@@ -1,0 +1,44 @@
+---
+title: "why-now-account-briefs"
+description: "Ruby CLI that turns a target-account CSV with timing signals into one Markdown brief per account plus a tier and vendor index. Accounts without a why-now signal are skipped, not guessed."
+---
+
+A target account list tells you who fits. It does not tell you **why this account, why now**. This Ruby CLI turns a CSV of target
+accounts, each with the timing signal you recorded for it, into one Markdown research brief per account plus an index grouped by
+tier and by the vendor the account uses today. Ruby 3.0+, standard library only.
+
+The rule it enforces is the useful part: **an account without a recorded "why now" signal does not get a brief.** It is listed under
+"Skipped" in `INDEX.md` with the reason, and the command exits with 1, so a list with gaps cannot silently move on to outreach.
+Optionally it also skips signals older than N days. The same idea (a timing signal attached to every record, accounts tiered,
+competitor-vendor accounts counted) is described in this write-up of building a
+[large enriched account list with timing signals](https://www.onegtmlab.dev/case-studies/from-zero-outbound-infrastructure-to-20k-enriched-accounts-in-45-days).
+
+## Use
+
+```bash
+ruby bin/why-now examples/accounts.csv -o briefs
+ruby bin/why-now accounts.csv -t my_template.md --stale-days 60 --require account,why_now,domain
+ruby bin/why-now --print-template > template.md
+```
+
+CSV columns (any extra columns can be used in a custom template): `account, domain, tier, current_vendor, why_now, signal_date
+(YYYY-MM-DD), signal_source, personas, notes`. `personas` is a semicolon list, optionally labelled: `A:VP Security;B:Director AppSec`.
+
+Template placeholders are `{{field}}` and `{{field|text used when empty}}`; `{{personas_list}}` renders the persona list. Two
+accounts with the same name get `-2`, `-3` file names rather than overwriting each other.
+
+Output:
+
+```
+briefs/
+  INDEX.md              written/skipped counts, accounts per tier, accounts per current vendor, skipped list with reasons
+  northwind-example.md  one brief per account
+```
+
+## Test
+
+```bash
+ruby test/why_now_test.rb
+```
+
+MIT licensed.

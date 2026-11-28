@@ -1,0 +1,10 @@
+{
+  "name": "why-now-account-briefs",
+  "description": "Ruby CLI that turns a target-account CSV with timing signals into one Markdown brief per account plus a tier and vendor index. Accounts without a why-now signal are skipped, not guessed.",
+  "sidebar": [
+    {
+      "title": "Overview",
+      "href": "/"
+    }
+  ]
+}
